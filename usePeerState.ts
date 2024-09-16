@@ -5,10 +5,10 @@ import PeerError from './types/peer-error'
 // copied partially from https://github.com/madou/react-peer/blob/master/src/use-peer-state.tsx
 const usePeerState = (
   opts: { userId: string | undefined, stunUrl: string } = { userId: undefined, stunUrl: '' }
-): [string | undefined, Peer, PeerError | undefined] => {
-  const [error, setError] = useState<PeerError | undefined>(undefined)
+): [Peer | null, string | undefined, PeerError | undefined] => {
   const [peer, setPeer] = useState<Peer | null>(null)
   const [userId, setUserId] = useState(opts.userId)
+  const [error, setError] = useState<PeerError | undefined>(undefined)
 
   useEffect(() => {
     import('peerjs').then(({ default: Peer }) => {
@@ -38,27 +38,22 @@ const usePeerState = (
         }
       })
 
-      localPeer?.on('open', () => {
-        if (userId !== localPeer?.id) {
-          setUserId(localPeer?.id)
-        }
+      localPeer?.on('open', (id) => {
+        console.dir(id)
+        setUserId(id)
       })
 
       localPeer?.on('error', (err) => setError(err))
     })
 
     return function cleanup() {
-      if (peer) {
-        peer.destroy()
-      }
+      peer?.destroy()
     }
-  }, [opts.userId])
+  }, [userId, error])
 
   return [
-    userId,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     peer,
+    userId,
     error
   ]
 }

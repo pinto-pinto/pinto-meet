@@ -4,9 +4,9 @@ import { Socket } from 'socket.io-client'
 import PeerCall from './types/peer-call'
 
 const useConnectionState = (
-  peer: Peer,
-  socket: Socket,
-  stream: MediaStream
+  peer: Peer | null,
+  socket: Socket | null,
+  stream: MediaStream | null
 ): [PeerCall[]] => {
   const [calls, setCalls] = useState<PeerCall[]>([])
 
@@ -33,7 +33,7 @@ const useConnectionState = (
     socket.on('user-disconnected', (peerId: string) => {
       removeCallFromPeersByUserId(peerId)
     })
-  }, [peer, stream])
+  }, [peer, socket, stream])
 
   const addCallToPeers = (peerId: string, call: MediaConnection) => {
     call.on('stream', (peerVideoStream: MediaStream) => {

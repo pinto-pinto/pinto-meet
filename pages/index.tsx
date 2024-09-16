@@ -29,6 +29,7 @@ const Home = () => (
       <Time />
       <JoinForm />
     </div>
+    <br></br>
   </>
 )
 
